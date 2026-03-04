@@ -1,0 +1,22 @@
+## Tasks
+
+- [ ] 1. Create HTML entry point and CSS layout | Build index.html with canvas element, UI overlay divs for menu/HUD/game-over screens. Create style.css with full-viewport canvas, centered layout, retro-styled UI elements, responsive design | files: index.html, src/css/style.css
+- [ ] 2. Implement utility functions and constants | Math helpers (lerp, clamp, randRange, distance), game constants (canvas size, colors, speeds), vector operations | files: src/js/utils.js
+- [ ] 3. Build input handling system | Keyboard event listeners (WASD/arrows + space), mouse/touch position tracking for aiming, mobile touch controls, input state object | files: src/js/input.js
+- [ ] 4. Create the main game loop and state machine | RequestAnimationFrame loop, delta time, game states (MENU, PLAYING, PAUSED, GAME_OVER), state transitions, canvas resize handling | files: src/js/game.js
+- [ ] 5. Implement the renderer and camera system | Canvas context management, screen shake effect, coordinate transforms, clearing, blend modes for particles | files: src/js/renderer.js
+- [ ] 6. Build the parallax starfield background | Multiple layers of stars with different speeds and sizes, twinkling effect, smooth scrolling | files: src/js/starfield.js
+- [ ] 7. Create the player ship | Player class with position, velocity, acceleration, bounds clamping, ship drawing (procedural polygon), invincibility frames on hit, lives system | files: src/js/player.js
+- [ ] 8. Implement the bullet/projectile system | Bullet class for player and enemy projectiles, bullet pool, different bullet types (single, spread, rapid), movement and lifecycle | files: src/js/bullets.js
+- [ ] 9. Create enemy types and AI behaviors | Base Enemy class, 3+ enemy types: basic (straight line), zigzag (sine wave), tank (slow, high HP). Each with unique movement patterns and visual designs | files: src/js/enemies.js
+- [ ] 10. Build the wave spawner system | Wave progression, enemy composition per wave, spawn timing, difficulty scaling (speed, count, fire rate), boss waves every 5 levels | files: src/js/spawner.js
+- [ ] 11. Implement collision detection | AABB and circle-based collision checks, player-bullets vs enemies, enemy-bullets vs player, player vs power-ups, player vs enemies | files: src/js/collision.js
+- [ ] 12. Create the particle system | Particle class with position, velocity, lifetime, color, size decay. Explosion effects, engine trails, hit sparks, death bursts | files: src/js/particles.js
+- [ ] 13. Build the power-up system | PowerUp class, types: shield (temp invincibility), spread-shot, rapid-fire, extra life. Random drops from enemies, visual indicators, timed effects | files: src/js/powerups.js
+- [ ] 14. Implement procedural audio | Web Audio API sound effects: laser, explosion, power-up collect, player death, menu select. Volume control, mute toggle | files: src/js/audio.js
+- [ ] 15. Create HUD and score display | Draw score, high score, lives, active power-ups, wave number on canvas. Combo multiplier display, score pop-ups | files: src/js/hud.js
+- [ ] 16. Build menu screens | Start screen with title animation, controls info, start button. Pause overlay. Game over screen with final score, high score (localStorage), restart | files: src/js/menu.js
+- [ ] 17. Wire everything together in game.js | Import and initialize all modules, connect game loop to all systems, handle entity lifecycle, integrate scoring and progression | files: src/js/game.js
+- [ ] 18. Polish and visual effects | Add screen flash on explosions, trail effects on player, glow effects, color palettes, smooth transitions between states, mobile responsive tweaks | files: src/js/renderer.js, src/js/particles.js, src/css/style.css
+- [ ] 19. Testing and bug fixes | Play-test the game, fix collision edge cases, balance difficulty curve, ensure mobile controls work, test on different screen sizes, fix any rendering glitches | files: all
+- [ ] 20. Deploy to the web | Build the dist folder, deploy to Surge.sh (or alternative free host), verify the live URL works, provide link to user | files: build.js, dist/

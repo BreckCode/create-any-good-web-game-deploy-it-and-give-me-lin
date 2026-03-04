@@ -1,0 +1,16 @@
+{
+  "name": "cosmic-defender",
+  "version": "1.0.0",
+  "description": "A fast-paced space shooter arcade game built with HTML5 Canvas",
+  "main": "src/js/game.js",
+  "scripts": {
+    "build": "node build.js",
+    "dev": "npx serve dist -p 3000",
+    "deploy": "node build.js && npx surge dist cosmic-defender-game.surge.sh"
+  },
+  "keywords": ["game", "space-shooter", "html5", "canvas", "arcade"],
+  "license": "MIT",
+  "devDependencies": {
+    "surge": "^0.23.1"
+  }
+}
