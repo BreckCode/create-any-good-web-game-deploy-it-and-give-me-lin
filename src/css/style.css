@@ -142,59 +142,18 @@ html, body {
   margin-top: 0.3rem;
 }
 
-/* HUD */
+/* HUD — canvas-rendered, DOM div used only for show/hide state */
 #hud {
   position: absolute;
   inset: 0;
   pointer-events: none;
   z-index: 5;
-  padding: 1rem;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
 }
 
-#hud-top {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-}
-
-#hud-top > div {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.hud-label {
-  font-size: 0.6rem;
-  letter-spacing: 0.2em;
-  color: #888;
-}
-
-#score-value,
-#wave-value,
-#highscore-value {
-  font-size: 1.4rem;
-  font-weight: bold;
-  color: #fff;
-  text-shadow: 0 0 8px rgba(0, 255, 255, 0.5);
-}
-
+/* Hide DOM HUD content — all HUD info is drawn on canvas by hud.js */
+#hud-top,
 #hud-bottom {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-end;
-}
-
-#hud-lives {
-  display: flex;
-  gap: 0.4rem;
-}
-
-#hud-powerups {
-  display: flex;
-  gap: 0.5rem;
+  display: none;
 }
 
 /* Pause Screen */

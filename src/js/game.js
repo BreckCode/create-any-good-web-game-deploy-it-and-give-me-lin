@@ -40,19 +40,15 @@ const Game = (function () {
   // Active power-up timers { type: remainingSeconds }
   let activePowerUps = {};
 
-  // Wave state
-  let waveTimer = 0;
-  let waveEnemiesRemaining = 0;
-  let waveClearDelay = 0; // brief pause between waves
+  // Engine trail spawn timer
+  let engineTrailTimer = 0;
+  const ENGINE_TRAIL_INTERVAL = 0.03; // spawn engine particles every 30ms
 
   // --- DOM References ---
   let menuScreen = null;
   let hudElement = null;
   let pauseScreen = null;
   let gameoverScreen = null;
-  let scoreValueEl = null;
-  let waveValueEl = null;
-  let highscoreValueEl = null;
   let finalScoreEl = null;
   let finalHighscoreEl = null;
   let newHighscoreMsg = null;
@@ -93,10 +89,10 @@ const Game = (function () {
     screen.classList.add('hidden');
   }
 
-  function updateHUD() {
-    if (scoreValueEl) scoreValueEl.textContent = score;
-    if (waveValueEl) waveValueEl.textContent = wave;
-    if (highscoreValueEl) highscoreValueEl.textContent = highScore;
+  function playSelectSound() {
+    if (typeof AudioManager !== 'undefined' && AudioManager.play) {
+      AudioManager.play('select');
+    }
   }
 
   // --- State Transitions ---
@@ -113,9 +109,7 @@ const Game = (function () {
     switch (newState) {
       case STATE.MENU:
         showScreen(menuScreen);
-        if (typeof Menu !== 'undefined' && Menu.onMenuEnter) {
-          Menu.onMenuEnter();
-        }
+        Menu.onMenuEnter();
         break;
 
       case STATE.PLAYING:
@@ -133,7 +127,8 @@ const Game = (function () {
 
       case STATE.GAME_OVER:
         // Update high score
-        if (score > highScore) {
+        const isNewHigh = score > highScore;
+        if (isNewHigh) {
           highScore = score;
           saveHighScore(highScore);
         }
@@ -141,16 +136,14 @@ const Game = (function () {
         if (finalScoreEl) finalScoreEl.textContent = score;
         if (finalHighscoreEl) finalHighscoreEl.textContent = highScore;
         if (newHighscoreMsg) {
-          if (score >= highScore && score > 0) {
+          if (isNewHigh && score > 0) {
             newHighscoreMsg.classList.remove('hidden');
           } else {
             newHighscoreMsg.classList.add('hidden');
           }
         }
-        // Trigger menu canvas effects
-        if (typeof Menu !== 'undefined' && Menu.onGameOver) {
-          Menu.onGameOver(score, highScore);
-        }
+        // Trigger menu canvas effects (fireworks on new high score)
+        Menu.onGameOver(score, highScore);
         showScreen(gameoverScreen);
         break;
     }
@@ -163,9 +156,7 @@ const Game = (function () {
     lives = PLAYER_DEFAULTS.LIVES;
     comboCount = 0;
     comboTimer = 0;
-    waveTimer = 0;
-    waveEnemiesRemaining = 0;
-    waveClearDelay = 0;
+    engineTrailTimer = 0;
 
     // Clear all entity arrays
     playerBullets.length = 0;
@@ -176,25 +167,13 @@ const Game = (function () {
     activePowerUps = {};
 
     // Clear HUD popups
-    if (typeof HUD !== 'undefined' && HUD.clearPopups) {
-      HUD.clearPopups();
-    }
+    HUD.clearPopups();
 
-    // Initialize subsystems that exist
-    if (typeof Player !== 'undefined' && Player.init) {
-      player = Player.init();
-    }
-    if (typeof Starfield !== 'undefined' && Starfield.init) {
-      Starfield.init();
-    }
-    if (typeof Spawner !== 'undefined' && Spawner.init) {
-      Spawner.init();
-    }
-    if (typeof Renderer !== 'undefined' && Renderer.init) {
-      Renderer.init(ctx);
-    }
-
-    updateHUD();
+    // Initialize subsystems
+    player = Player.init();
+    Starfield.init();
+    Spawner.init();
+    Renderer.init(ctx);
   }
 
   // --- Game Update (one frame) ---
@@ -218,116 +197,86 @@ const Game = (function () {
       }
     }
 
-    // Update subsystems (each checks for its own existence)
-    if (typeof Starfield !== 'undefined' && Starfield.update) {
-      Starfield.update(dt);
-    }
-    if (typeof Player !== 'undefined' && Player.update) {
-      Player.update(dt, Game);
-    }
-    if (typeof Bullets !== 'undefined' && Bullets.update) {
-      Bullets.update(dt, playerBullets, enemyBullets);
-    }
-    if (typeof Enemies !== 'undefined' && Enemies.update) {
-      Enemies.update(dt, enemies, Game);
-    }
-    if (typeof Spawner !== 'undefined' && Spawner.update) {
-      Spawner.update(dt, Game);
-    }
-    if (typeof PowerUps !== 'undefined' && PowerUps.update) {
-      PowerUps.update(dt, powerups);
-    }
-    if (typeof Particles !== 'undefined' && Particles.update) {
-      Particles.update(dt, particles);
-    }
-    if (typeof Collision !== 'undefined' && Collision.update) {
-      Collision.update(Game);
-    }
-    if (typeof HUD !== 'undefined' && HUD.update) {
-      HUD.update(dt);
-    }
-    if (typeof Renderer !== 'undefined' && Renderer.update) {
-      Renderer.update(dt);
+    // Update subsystems in order:
+    // 1. Background
+    Starfield.update(dt);
+
+    // 2. Player input & movement
+    Player.update(dt, Game);
+
+    // 3. Spawn engine trail particles behind the player
+    if (player && player.active) {
+      engineTrailTimer += dt;
+      while (engineTrailTimer >= ENGINE_TRAIL_INTERVAL) {
+        engineTrailTimer -= ENGINE_TRAIL_INTERVAL;
+        Particles.spawnEngineTrail(particles, player.x, player.y + player.height / 2);
+      }
     }
 
-    updateHUD();
+    // 4. Spawner creates new enemies based on wave progression
+    Spawner.update(dt, Game);
+
+    // 5. Update all entities
+    Enemies.update(dt, enemies, Game);
+    Bullets.update(dt, playerBullets, enemyBullets);
+    PowerUps.update(dt, powerups);
+    Particles.update(dt, particles);
+
+    // 6. Collision detection — triggers scoring, damage, particles, audio
+    Collision.update(Game);
+
+    // 7. HUD floating score pop-ups
+    HUD.update(dt);
+
+    // 8. Renderer effects (screen shake decay, flash decay)
+    Renderer.update(dt);
   }
 
   // --- Game Render (one frame) ---
   function render() {
-    ctx.clearRect(0, 0, GAME.WIDTH, GAME.HEIGHT);
-
-    // Black background
-    ctx.fillStyle = '#0a0a1a';
-    ctx.fillRect(0, 0, GAME.WIDTH, GAME.HEIGHT);
+    // Clear canvas with background
+    Renderer.clear();
 
     if (currentState === STATE.MENU) {
       // Draw starfield on menu for visual appeal
-      if (typeof Starfield !== 'undefined' && Starfield.render) {
-        Starfield.render(ctx);
-      }
+      Starfield.render(ctx);
       // Draw menu canvas effects (particles, glow, scan lines)
-      if (typeof Menu !== 'undefined' && Menu.render) {
-        Menu.render(ctx, currentState);
-      }
+      Menu.render(ctx, currentState);
       return;
     }
 
-    // Apply screen shake offset
-    let shakeX = 0, shakeY = 0;
-    if (typeof Renderer !== 'undefined' && Renderer.getShakeOffset) {
-      const shake = Renderer.getShakeOffset();
-      shakeX = shake.x;
-      shakeY = shake.y;
-    }
-
-    ctx.save();
-    ctx.translate(shakeX, shakeY);
+    // Begin frame: save context, apply screen shake transform
+    Renderer.beginFrame();
 
     // Render layers in order
-    if (typeof Starfield !== 'undefined' && Starfield.render) {
-      Starfield.render(ctx);
-    }
+    Starfield.render(ctx);
 
-    // Power-ups
-    if (typeof PowerUps !== 'undefined' && PowerUps.render) {
-      PowerUps.render(ctx, powerups);
-    }
+    // Power-ups (below enemies/player)
+    PowerUps.render(ctx, powerups);
 
     // Enemies
-    if (typeof Enemies !== 'undefined' && Enemies.render) {
-      Enemies.render(ctx, enemies);
-    }
+    Enemies.render(ctx, enemies);
 
-    // Bullets
-    if (typeof Bullets !== 'undefined' && Bullets.render) {
-      Bullets.render(ctx, playerBullets, enemyBullets);
-    }
+    // Bullets (both player and enemy)
+    Bullets.render(ctx, playerBullets, enemyBullets);
 
-    // Player
-    if (typeof Player !== 'undefined' && Player.render) {
-      Player.render(ctx);
-    }
+    // Player ship
+    Player.render(ctx);
 
-    // Particles (on top for glow effects)
-    if (typeof Particles !== 'undefined' && Particles.render) {
-      Particles.render(ctx, particles);
-    }
+    // Particles on top for glow effects
+    Particles.render(ctx, particles);
 
-    // Wave announcements
-    if (typeof Spawner !== 'undefined' && Spawner.render) {
-      Spawner.render(ctx);
-    }
+    // Wave announcements (e.g. "WAVE 3" text)
+    Spawner.render(ctx);
 
-    ctx.restore();
+    // End frame: restore context, draw screen flash overlay
+    Renderer.endFrame();
 
-    // HUD drawn without shake
-    if (typeof HUD !== 'undefined' && HUD.render) {
-      HUD.render(ctx, Game);
-    }
+    // HUD drawn without shake offset
+    HUD.render(ctx, Game);
 
     // Menu canvas effects for pause/game-over overlays
-    if (currentState !== STATE.PLAYING && typeof Menu !== 'undefined' && Menu.render) {
+    if (currentState !== STATE.PLAYING) {
       Menu.render(ctx, currentState);
     }
   }
@@ -348,32 +297,28 @@ const Game = (function () {
     if (Input.isJustPressed('pause')) {
       if (currentState === STATE.PLAYING) {
         setState(STATE.PAUSED);
+        playSelectSound();
       } else if (currentState === STATE.PAUSED) {
         setState(STATE.PLAYING);
+        playSelectSound();
       }
     }
 
-    // Handle confirm input on menu/game over
+    // Handle confirm input on menu/game over (keyboard Enter/Space)
     if (Input.isJustPressed('confirm')) {
       if (currentState === STATE.MENU) {
+        playSelectSound();
         setState(STATE.PLAYING);
       } else if (currentState === STATE.GAME_OVER) {
+        playSelectSound();
         setState(STATE.PLAYING);
       }
     }
 
-    // Update starfield even in menu/paused for visual effect
-    if (currentState === STATE.MENU || currentState === STATE.PAUSED) {
-      if (typeof Starfield !== 'undefined' && Starfield.update) {
-        Starfield.update(dt);
-      }
-    }
-
-    // Update menu canvas effects in non-playing states
-    if (currentState !== STATE.PLAYING) {
-      if (typeof Menu !== 'undefined' && Menu.update) {
-        Menu.update(dt, currentState);
-      }
+    // Update starfield and menu effects in non-playing states
+    if (currentState === STATE.MENU || currentState === STATE.PAUSED || currentState === STATE.GAME_OVER) {
+      Starfield.update(dt);
+      Menu.update(dt, currentState);
     }
 
     // Update game logic
@@ -398,6 +343,7 @@ const Game = (function () {
     if (startBtn) {
       startBtn.addEventListener('click', function () {
         if (currentState === STATE.MENU) {
+          playSelectSound();
           setState(STATE.PLAYING);
         }
       });
@@ -406,6 +352,7 @@ const Game = (function () {
     if (resumeBtn) {
       resumeBtn.addEventListener('click', function () {
         if (currentState === STATE.PAUSED) {
+          playSelectSound();
           setState(STATE.PLAYING);
         }
       });
@@ -414,6 +361,7 @@ const Game = (function () {
     if (quitBtn) {
       quitBtn.addEventListener('click', function () {
         if (currentState === STATE.PAUSED) {
+          playSelectSound();
           setState(STATE.MENU);
         }
       });
@@ -422,6 +370,7 @@ const Game = (function () {
     if (restartBtn) {
       restartBtn.addEventListener('click', function () {
         if (currentState === STATE.GAME_OVER) {
+          playSelectSound();
           setState(STATE.PLAYING);
         }
       });
@@ -430,6 +379,7 @@ const Game = (function () {
     if (menuBtn) {
       menuBtn.addEventListener('click', function () {
         if (currentState === STATE.GAME_OVER) {
+          playSelectSound();
           setState(STATE.MENU);
         }
       });
@@ -469,7 +419,7 @@ const Game = (function () {
     get particles() { return particles; },
     get powerups() { return powerups; },
 
-    // Setters for subsystems to modify game state
+    // Scoring with combo multiplier and score pop-up at kill location
     addScore(points, x, y) {
       comboCount++;
       comboTimer = SCORING.COMBO_WINDOW;
@@ -478,7 +428,7 @@ const Game = (function () {
       score += earned;
 
       // Score pop-up at kill location
-      if (typeof HUD !== 'undefined' && HUD.addScorePopup && x !== undefined) {
+      if (x !== undefined) {
         HUD.addScorePopup(x, y, earned, multiplier);
       }
     },
@@ -497,6 +447,7 @@ const Game = (function () {
       lives--;
       if (lives <= 0) {
         lives = 0;
+        // Brief delay so death particles are visible before game over
         setState(STATE.GAME_OVER);
       }
     },
@@ -514,12 +465,14 @@ const Game = (function () {
     },
 
     triggerScreenShake(intensity, duration) {
-      if (typeof Renderer !== 'undefined' && Renderer.shake) {
-        Renderer.shake(
-          intensity || SCREEN_SHAKE.INTENSITY,
-          duration || SCREEN_SHAKE.DURATION
-        );
-      }
+      Renderer.shake(
+        intensity || SCREEN_SHAKE.INTENSITY,
+        duration || SCREEN_SHAKE.DURATION
+      );
+    },
+
+    triggerScreenFlash(alpha) {
+      Renderer.flash(alpha || 0.15);
     },
 
     // Initialize the game. Call once when the page loads.
@@ -532,9 +485,6 @@ const Game = (function () {
       hudElement = document.getElementById('hud');
       pauseScreen = document.getElementById('pause-screen');
       gameoverScreen = document.getElementById('gameover-screen');
-      scoreValueEl = document.getElementById('score-value');
-      waveValueEl = document.getElementById('wave-value');
-      highscoreValueEl = document.getElementById('highscore-value');
       finalScoreEl = document.getElementById('final-score-value');
       finalHighscoreEl = document.getElementById('final-highscore-value');
       newHighscoreMsg = document.getElementById('new-highscore-msg');
@@ -545,25 +495,20 @@ const Game = (function () {
 
       // Load persisted high score
       highScore = loadHighScore();
-      if (highscoreValueEl) highscoreValueEl.textContent = highScore;
 
       // Initialize input system
       Input.init(canvas);
 
-      // Initialize audio if available
+      // Initialize audio
       if (typeof AudioManager !== 'undefined' && AudioManager.init) {
         AudioManager.init();
       }
 
       // Initialize starfield for menu background
-      if (typeof Starfield !== 'undefined' && Starfield.init) {
-        Starfield.init();
-      }
+      Starfield.init();
 
       // Initialize menu canvas effects
-      if (typeof Menu !== 'undefined' && Menu.init) {
-        Menu.init();
-      }
+      Menu.init();
 
       // Set up button click handlers
       setupButtons();

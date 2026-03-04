@@ -285,12 +285,14 @@ const Enemies = (function () {
       Particles.spawnExplosion(game.particles, enemy.x, enemy.y, enemy.color, count);
     }
 
-    // Screen shake for big enemies
+    // Screen shake and flash for big enemies
     if (game && game.triggerScreenShake) {
       if (enemy.type === TYPE.BOSS) {
         game.triggerScreenShake(SCREEN_SHAKE.INTENSITY * 2, SCREEN_SHAKE.DURATION * 2);
+        if (game.triggerScreenFlash) game.triggerScreenFlash(0.4);
       } else if (enemy.type === TYPE.TANK) {
         game.triggerScreenShake(SCREEN_SHAKE.INTENSITY * 0.7, SCREEN_SHAKE.DURATION);
+        if (game.triggerScreenFlash) game.triggerScreenFlash(0.15);
       }
     }
 
