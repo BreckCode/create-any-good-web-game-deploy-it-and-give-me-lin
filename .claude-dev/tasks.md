@@ -5,7 +5,7 @@
 - [x] 3. Build input handling system | Keyboard event listeners (WASD/arrows + space), mouse/touch position tracking for aiming, mobile touch controls, input state object | files: src/js/input.js
 - [x] 4. Create the main game loop and state machine | RequestAnimationFrame loop, delta time, game states (MENU, PLAYING, PAUSED, GAME_OVER), state transitions, canvas resize handling | files: src/js/game.js
 - [x] 5. Implement the renderer and camera system | Canvas context management, screen shake effect, coordinate transforms, clearing, blend modes for particles | files: src/js/renderer.js
-- [ ] 6. Build the parallax starfield background | Multiple layers of stars with different speeds and sizes, twinkling effect, smooth scrolling | files: src/js/starfield.js
+- [x] 6. Build the parallax starfield background | Multiple layers of stars with different speeds and sizes, twinkling effect, smooth scrolling | files: src/js/starfield.js
 - [ ] 7. Create the player ship | Player class with position, velocity, acceleration, bounds clamping, ship drawing (procedural polygon), invincibility frames on hit, lives system | files: src/js/player.js
 - [ ] 8. Implement the bullet/projectile system | Bullet class for player and enemy projectiles, bullet pool, different bullet types (single, spread, rapid), movement and lifecycle | files: src/js/bullets.js
 - [ ] 9. Create enemy types and AI behaviors | Base Enemy class, 3+ enemy types: basic (straight line), zigzag (sine wave), tank (slow, high HP). Each with unique movement patterns and visual designs | files: src/js/enemies.js
