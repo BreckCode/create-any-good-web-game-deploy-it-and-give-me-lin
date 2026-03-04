@@ -97,12 +97,12 @@ const SCORING = {
 };
 
 const WAVE_CONFIG = {
-  BASE_ENEMIES: 5,
+  BASE_ENEMIES: 4,
   ENEMIES_PER_WAVE: 2,    // additional enemies each wave
-  SPAWN_INTERVAL: 1.2,    // seconds between spawns
+  SPAWN_INTERVAL: 1.4,    // seconds between spawns (slightly more breathing room)
   BOSS_EVERY: 5,          // boss wave every N waves
-  SPEED_SCALE: 0.05,      // speed increase per wave (5%)
-  FIRE_RATE_SCALE: 0.03,  // fire rate increase per wave (3%)
+  SPEED_SCALE: 0.04,      // speed increase per wave (4%, gentler curve)
+  FIRE_RATE_SCALE: 0.025, // fire rate increase per wave (2.5%, gentler curve)
 };
 
 const PARTICLES = {

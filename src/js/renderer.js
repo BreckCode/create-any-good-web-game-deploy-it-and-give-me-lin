@@ -14,9 +14,19 @@ const Renderer = (function () {
   let shakeOffsetX = 0;
   let shakeOffsetY = 0;
 
-  // Screen flash state (white flash on big explosions)
+  // Screen flash state (supports colored flashes)
   let flashAlpha = 0;
-  let flashDecay = 4; // how fast flash fades per second
+  let flashDecay = 4;
+  let flashColor = '#ffffff';
+
+  // State transition fade
+  let fadeAlpha = 0;       // current fade overlay alpha
+  let fadeTarget = 0;      // target alpha (0 = transparent, 1 = black)
+  let fadeSpeed = 3;       // alpha change per second
+
+  // Vignette (always-on subtle edge darkening during gameplay)
+  let vignetteGradient = null;
+  let vignetteBuilt = false;
 
   function init(context) {
     ctx = context;
@@ -26,13 +36,16 @@ const Renderer = (function () {
     shakeOffsetX = 0;
     shakeOffsetY = 0;
     flashAlpha = 0;
+    flashColor = '#ffffff';
+    fadeAlpha = 0;
+    fadeTarget = 0;
+    vignetteBuilt = false;
   }
 
   function update(dt) {
     // Update screen shake
     if (shakeTimer > 0) {
       shakeTimer -= dt;
-      // Decay intensity over time
       const progress = clamp(shakeTimer / shakeDuration, 0, 1);
       const currentIntensity = shakeIntensity * progress * SCREEN_SHAKE.DECAY;
       shakeOffsetX = randRange(-currentIntensity, currentIntensity);
@@ -50,11 +63,19 @@ const Renderer = (function () {
       flashAlpha -= flashDecay * dt;
       if (flashAlpha < 0) flashAlpha = 0;
     }
+
+    // Update state transition fade
+    if (fadeAlpha !== fadeTarget) {
+      if (fadeAlpha < fadeTarget) {
+        fadeAlpha = Math.min(fadeAlpha + fadeSpeed * dt, fadeTarget);
+      } else {
+        fadeAlpha = Math.max(fadeAlpha - fadeSpeed * dt, fadeTarget);
+      }
+    }
   }
 
   // Trigger screen shake
   function shake(intensity, duration) {
-    // Take the stronger shake if one is already active
     if (intensity > shakeIntensity * (shakeTimer / shakeDuration || 0)) {
       shakeIntensity = intensity;
       shakeDuration = duration;
@@ -62,9 +83,16 @@ const Renderer = (function () {
     }
   }
 
-  // Trigger a white screen flash
-  function flash(alpha) {
+  // Trigger a screen flash (supports color parameter)
+  function flash(alpha, color) {
     flashAlpha = clamp(alpha || 0.3, 0, 1);
+    flashColor = color || '#ffffff';
+  }
+
+  // Set fade target for smooth state transitions
+  function fadeTo(targetAlpha, speed) {
+    fadeTarget = clamp(targetAlpha, 0, 1);
+    fadeSpeed = speed || 3;
   }
 
   // Get current shake offset for the camera transform
@@ -96,10 +124,51 @@ const Renderer = (function () {
     if (flashAlpha > 0) {
       ctx.save();
       ctx.globalAlpha = flashAlpha;
-      ctx.fillStyle = '#ffffff';
+      const rgb = hexToRgb(flashColor);
+      if (rgb.r === 0 && rgb.g === 0 && rgb.b === 0 && flashColor !== '#000000') {
+        ctx.fillStyle = flashColor;
+      } else {
+        ctx.fillStyle = rgba(rgb.r, rgb.g, rgb.b, 1);
+      }
       ctx.fillRect(0, 0, GAME.WIDTH, GAME.HEIGHT);
       ctx.restore();
     }
+
+    // Draw subtle gameplay vignette
+    drawVignette(0.35);
+
+    // Draw state transition fade overlay
+    if (fadeAlpha > 0.001) {
+      ctx.save();
+      ctx.globalAlpha = fadeAlpha;
+      ctx.fillStyle = '#000000';
+      ctx.fillRect(0, 0, GAME.WIDTH, GAME.HEIGHT);
+      ctx.restore();
+    }
+  }
+
+  // Build and draw a vignette gradient overlay
+  function drawVignette(intensity) {
+    if (!ctx) return;
+    if (intensity <= 0) return;
+
+    // Build gradient once and cache
+    if (!vignetteBuilt) {
+      const cx = GAME.WIDTH / 2;
+      const cy = GAME.HEIGHT / 2;
+      const outerRadius = Math.sqrt(cx * cx + cy * cy);
+      vignetteGradient = ctx.createRadialGradient(cx, cy, outerRadius * 0.45, cx, cy, outerRadius);
+      vignetteGradient.addColorStop(0, 'rgba(0,0,0,0)');
+      vignetteGradient.addColorStop(0.7, 'rgba(0,0,0,0)');
+      vignetteGradient.addColorStop(1, 'rgba(0,0,0,1)');
+      vignetteBuilt = true;
+    }
+
+    ctx.save();
+    ctx.globalAlpha = intensity;
+    ctx.fillStyle = vignetteGradient;
+    ctx.fillRect(0, 0, GAME.WIDTH, GAME.HEIGHT);
+    ctx.restore();
   }
 
   // Set additive blending for glow/particle effects
@@ -270,6 +339,7 @@ const Renderer = (function () {
     update: update,
     shake: shake,
     flash: flash,
+    fadeTo: fadeTo,
     getShakeOffset: getShakeOffset,
     clear: clear,
     beginFrame: beginFrame,
@@ -284,10 +354,12 @@ const Renderer = (function () {
     drawText: drawText,
     drawPolygon: drawPolygon,
     drawPolygonGlow: drawPolygonGlow,
+    drawVignette: drawVignette,
     screenToWorld: screenToWorld,
     worldToScreen: worldToScreen,
 
     // Direct context access for advanced rendering
     get ctx() { return ctx; },
+    get fadeAlpha() { return fadeAlpha; },
   };
 })();

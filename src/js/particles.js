@@ -3,12 +3,12 @@
 // ============================================================
 // Particle pool with position, velocity, lifetime, color, size
 // decay. Provides explosion effects, engine trails, hit sparks,
-// death bursts, and power-up sparkles.
+// death bursts, power-up sparkles, bullet trails, and shockwaves.
 
 const Particles = (function () {
 
   // --- Create a Single Particle ---
-  function createParticle(arr, x, y, vx, vy, color, lifetime, size) {
+  function createParticle(arr, x, y, vx, vy, color, lifetime, size, type) {
     arr.push({
       x: x,
       y: y,
@@ -19,12 +19,11 @@ const Particles = (function () {
       maxLifetime: lifetime,
       size: size,
       active: true,
+      type: type || 'circle', // 'circle', 'ring'
     });
   }
 
   // --- Spawn Explosion Effect ---
-  // Used for enemy deaths, hit sparks, power-up collection, player hit.
-  // count=0 means use default PARTICLES.EXPLOSION_COUNT.
   function spawnExplosion(arr, x, y, color, count) {
     const num = count || PARTICLES.EXPLOSION_COUNT;
     const colors = Array.isArray(color) ? color : [color];
@@ -42,7 +41,7 @@ const Particles = (function () {
     }
   }
 
-  // --- Spawn Death Burst (large explosion) ---
+  // --- Spawn Death Burst (large explosion with shockwave ring) ---
   function spawnDeathBurst(arr, x, y, color) {
     const colors = Array.isArray(color) ? color : COLORS.PARTICLE_EXPLOSION;
 
@@ -57,6 +56,9 @@ const Particles = (function () {
 
       createParticle(arr, x, y, vx, vy, c, lifetime, size);
     }
+
+    // Add an expanding shockwave ring
+    createParticle(arr, x, y, 0, 0, randPick(colors), 0.5, 5, 'ring');
   }
 
   // --- Spawn Engine Trail Particles ---
@@ -107,6 +109,35 @@ const Particles = (function () {
     }
   }
 
+  // --- Spawn Bullet Trail (small fading particle behind projectile) ---
+  function spawnBulletTrail(arr, x, y, color) {
+    const c = color || COLORS.BULLET_PLAYER;
+    const vx = randRange(-8, 8);
+    const vy = randRange(15, 35);
+    const lifetime = randRange(0.08, 0.18);
+    const size = randRange(0.8, 1.8);
+
+    createParticle(arr, x, y, vx, vy, c, lifetime, size);
+  }
+
+  // --- Spawn Enemy Death Debris (directional chunks) ---
+  function spawnDebris(arr, x, y, color, dirX, dirY) {
+    const colors = Array.isArray(color) ? color : [color];
+    const count = 6;
+
+    for (let i = 0; i < count; i++) {
+      const angle = Math.atan2(dirY || 0, dirX || 0) + randRange(-0.8, 0.8);
+      const speed = randRange(100, 280);
+      const vx = Math.cos(angle) * speed;
+      const vy = Math.sin(angle) * speed;
+      const lifetime = randRange(0.3, 0.8);
+      const size = randRange(2, 4.5);
+      const c = randPick(colors);
+
+      createParticle(arr, x, y, vx, vy, c, lifetime, size);
+    }
+  }
+
   // --- Update All Particles ---
   function update(dt, arr) {
     for (let i = arr.length - 1; i >= 0; i--) {
@@ -122,11 +153,18 @@ const Particles = (function () {
         continue;
       }
 
-      // Apply velocity with slight drag
-      p.x += p.vx * dt;
-      p.y += p.vy * dt;
-      p.vx *= (1 - 2 * dt); // drag
-      p.vy *= (1 - 2 * dt);
+      if (p.type === 'ring') {
+        // Ring particles expand and fade — size grows over time
+        // size stores expansion rate, actual radius calculated in render
+        p.x += p.vx * dt;
+        p.y += p.vy * dt;
+      } else {
+        // Apply velocity with slight drag
+        p.x += p.vx * dt;
+        p.y += p.vy * dt;
+        p.vx *= (1 - 2 * dt);
+        p.vy *= (1 - 2 * dt);
+      }
     }
   }
 
@@ -143,14 +181,35 @@ const Particles = (function () {
 
       const lifeRatio = p.lifetime / p.maxLifetime;
       const alpha = lifeRatio;
-      const currentSize = p.size * lifeRatio;
-
-      if (currentSize <= 0) continue;
 
       // Parse color to apply alpha
       const rgb = hexToRgb(p.color);
-      if (rgb.r === 0 && rgb.g === 0 && rgb.b === 0 && p.color !== '#000000') {
-        // Fallback for non-hex colors (rgba strings etc)
+      const validHex = !(rgb.r === 0 && rgb.g === 0 && rgb.b === 0 && p.color !== '#000000');
+
+      if (p.type === 'ring') {
+        // Expanding shockwave ring
+        const progress = 1 - lifeRatio;
+        const ringRadius = progress * 60; // expand to 60px
+        const ringAlpha = alpha * 0.6;
+
+        if (validHex) {
+          ctx.strokeStyle = rgba(rgb.r, rgb.g, rgb.b, ringAlpha);
+        } else {
+          ctx.strokeStyle = p.color;
+          ctx.globalAlpha = ringAlpha;
+        }
+        ctx.lineWidth = Math.max(0.5, (1 - progress) * 3);
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, ringRadius, 0, Math.PI * 2);
+        ctx.stroke();
+        ctx.globalAlpha = 1;
+        continue;
+      }
+
+      const currentSize = p.size * lifeRatio;
+      if (currentSize <= 0) continue;
+
+      if (!validHex) {
         ctx.fillStyle = p.color;
         ctx.globalAlpha = alpha;
       } else {
@@ -164,7 +223,7 @@ const Particles = (function () {
       ctx.fill();
 
       // Glow effect for larger particles
-      if (currentSize > 2) {
+      if (currentSize > 2 && validHex) {
         ctx.fillStyle = rgba(rgb.r, rgb.g, rgb.b, alpha * 0.3);
         ctx.beginPath();
         ctx.arc(p.x, p.y, currentSize * 2, 0, Math.PI * 2);
@@ -185,5 +244,7 @@ const Particles = (function () {
     spawnEngineTrail: spawnEngineTrail,
     spawnHitSparks: spawnHitSparks,
     spawnSparkles: spawnSparkles,
+    spawnBulletTrail: spawnBulletTrail,
+    spawnDebris: spawnDebris,
   };
 })();

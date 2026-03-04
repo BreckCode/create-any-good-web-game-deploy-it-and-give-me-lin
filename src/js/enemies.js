@@ -280,19 +280,31 @@ const Enemies = (function () {
     }
 
     // Spawn explosion particles
-    if (typeof Particles !== 'undefined' && Particles.spawnExplosion) {
-      const count = enemy.type === TYPE.BOSS ? PARTICLES.DEATH_COUNT : PARTICLES.EXPLOSION_COUNT;
-      Particles.spawnExplosion(game.particles, enemy.x, enemy.y, enemy.color, count);
+    if (typeof Particles !== 'undefined') {
+      if (enemy.type === TYPE.BOSS) {
+        // Boss gets a massive death burst with shockwave ring
+        Particles.spawnDeathBurst(game.particles, enemy.x, enemy.y, [enemy.color, '#ff5252', '#ffab40', '#ffffff']);
+        Particles.spawnExplosion(game.particles, enemy.x, enemy.y, COLORS.PARTICLE_EXPLOSION, PARTICLES.DEATH_COUNT);
+      } else if (enemy.type === TYPE.TANK) {
+        // Tank gets a death burst with shockwave
+        Particles.spawnDeathBurst(game.particles, enemy.x, enemy.y, [enemy.color, '#b388ff', '#ffffff']);
+      } else {
+        // Normal enemies get standard explosion
+        Particles.spawnExplosion(game.particles, enemy.x, enemy.y, enemy.color, PARTICLES.EXPLOSION_COUNT);
+      }
     }
 
-    // Screen shake and flash for big enemies
+    // Screen shake and colored flash for enemies
     if (game && game.triggerScreenShake) {
       if (enemy.type === TYPE.BOSS) {
-        game.triggerScreenShake(SCREEN_SHAKE.INTENSITY * 2, SCREEN_SHAKE.DURATION * 2);
-        if (game.triggerScreenFlash) game.triggerScreenFlash(0.4);
+        game.triggerScreenShake(SCREEN_SHAKE.INTENSITY * 2.5, SCREEN_SHAKE.DURATION * 2.5);
+        if (game.triggerScreenFlash) game.triggerScreenFlash(0.5, '#ff4400');
       } else if (enemy.type === TYPE.TANK) {
-        game.triggerScreenShake(SCREEN_SHAKE.INTENSITY * 0.7, SCREEN_SHAKE.DURATION);
-        if (game.triggerScreenFlash) game.triggerScreenFlash(0.15);
+        game.triggerScreenShake(SCREEN_SHAKE.INTENSITY * 0.8, SCREEN_SHAKE.DURATION);
+        if (game.triggerScreenFlash) game.triggerScreenFlash(0.2, '#9933ff');
+      } else {
+        // Subtle screen shake for normal kills adds juice
+        game.triggerScreenShake(SCREEN_SHAKE.INTENSITY * 0.15, SCREEN_SHAKE.DURATION * 0.3);
       }
     }
 

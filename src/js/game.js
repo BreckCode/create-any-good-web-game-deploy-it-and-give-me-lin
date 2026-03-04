@@ -42,7 +42,15 @@ const Game = (function () {
 
   // Engine trail spawn timer
   let engineTrailTimer = 0;
-  const ENGINE_TRAIL_INTERVAL = 0.03; // spawn engine particles every 30ms
+  const ENGINE_TRAIL_INTERVAL = 0.03;
+
+  // Bullet trail spawn timer
+  let bulletTrailTimer = 0;
+  const BULLET_TRAIL_INTERVAL = 0.04;
+
+  // Death delay: brief pause before game over so particles are visible
+  let deathDelayTimer = 0;
+  let deathDelayActive = false;
 
   // --- DOM References ---
   let menuScreen = null;
@@ -117,7 +125,6 @@ const Game = (function () {
         if (prevState === STATE.MENU || prevState === STATE.GAME_OVER) {
           startNewGame();
         }
-        // Resuming from pause just continues
         break;
 
       case STATE.PAUSED:
@@ -157,6 +164,9 @@ const Game = (function () {
     comboCount = 0;
     comboTimer = 0;
     engineTrailTimer = 0;
+    bulletTrailTimer = 0;
+    deathDelayTimer = 0;
+    deathDelayActive = false;
 
     // Clear all entity arrays
     playerBullets.length = 0;
@@ -179,6 +189,18 @@ const Game = (function () {
   // --- Game Update (one frame) ---
   function update(dt) {
     if (currentState !== STATE.PLAYING) return;
+
+    // Handle death delay — keep particles/effects updating but pause gameplay
+    if (deathDelayActive) {
+      deathDelayTimer -= dt;
+      Particles.update(dt, particles);
+      Renderer.update(dt);
+      if (deathDelayTimer <= 0) {
+        deathDelayActive = false;
+        setState(STATE.GAME_OVER);
+      }
+      return;
+    }
 
     // Update combo timer
     if (comboTimer > 0) {
@@ -213,22 +235,34 @@ const Game = (function () {
       }
     }
 
-    // 4. Spawner creates new enemies based on wave progression
+    // 4. Spawn bullet trail particles behind player bullets
+    bulletTrailTimer += dt;
+    if (bulletTrailTimer >= BULLET_TRAIL_INTERVAL) {
+      bulletTrailTimer -= BULLET_TRAIL_INTERVAL;
+      for (let i = 0; i < playerBullets.length; i++) {
+        const b = playerBullets[i];
+        if (b.active) {
+          Particles.spawnBulletTrail(particles, b.x, b.y + 4, COLORS.BULLET_PLAYER);
+        }
+      }
+    }
+
+    // 5. Spawner creates new enemies based on wave progression
     Spawner.update(dt, Game);
 
-    // 5. Update all entities
+    // 6. Update all entities
     Enemies.update(dt, enemies, Game);
     Bullets.update(dt, playerBullets, enemyBullets);
     PowerUps.update(dt, powerups);
     Particles.update(dt, particles);
 
-    // 6. Collision detection — triggers scoring, damage, particles, audio
+    // 7. Collision detection — triggers scoring, damage, particles, audio
     Collision.update(Game);
 
-    // 7. HUD floating score pop-ups
+    // 8. HUD floating score pop-ups
     HUD.update(dt);
 
-    // 8. Renderer effects (screen shake decay, flash decay)
+    // 9. Renderer effects (screen shake decay, flash decay)
     Renderer.update(dt);
   }
 
@@ -269,7 +303,7 @@ const Game = (function () {
     // Wave announcements (e.g. "WAVE 3" text)
     Spawner.render(ctx);
 
-    // End frame: restore context, draw screen flash overlay
+    // End frame: restore context, draw screen flash, vignette, fade overlays
     Renderer.endFrame();
 
     // HUD drawn without shake offset
@@ -295,7 +329,7 @@ const Game = (function () {
 
     // Handle pause toggle input
     if (Input.isJustPressed('pause')) {
-      if (currentState === STATE.PLAYING) {
+      if (currentState === STATE.PLAYING && !deathDelayActive) {
         setState(STATE.PAUSED);
         playSelectSound();
       } else if (currentState === STATE.PAUSED) {
@@ -439,7 +473,9 @@ const Game = (function () {
       lives = val;
       if (lives <= 0) {
         lives = 0;
-        setState(STATE.GAME_OVER);
+        // Start death delay so explosion particles are visible
+        deathDelayActive = true;
+        deathDelayTimer = 0.8;
       }
     },
 
@@ -447,8 +483,16 @@ const Game = (function () {
       lives--;
       if (lives <= 0) {
         lives = 0;
+        // Spawn a large death burst at player position
+        if (player && typeof Particles !== 'undefined') {
+          Particles.spawnDeathBurst(particles, player.x, player.y, COLORS.PARTICLE_EXPLOSION);
+        }
+        // Red-tinted screen flash on death
+        Renderer.flash(0.5, '#ff2222');
+        Renderer.shake(SCREEN_SHAKE.INTENSITY * 2, SCREEN_SHAKE.DURATION * 3);
         // Brief delay so death particles are visible before game over
-        setState(STATE.GAME_OVER);
+        deathDelayActive = true;
+        deathDelayTimer = 1.0;
       }
     },
 
@@ -471,8 +515,8 @@ const Game = (function () {
       );
     },
 
-    triggerScreenFlash(alpha) {
-      Renderer.flash(alpha || 0.15);
+    triggerScreenFlash(alpha, color) {
+      Renderer.flash(alpha || 0.15, color);
     },
 
     // Initialize the game. Call once when the page loads.
