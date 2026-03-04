@@ -35,3 +35,5 @@ All individual entity systems exist (player, enemies, bullets, input, rendering,
 - [3/4/2026, 10:51:47 AM] Task 13 done: Build the power-up system
 - [DONE] Task 14: Implemented procedural audio with Web Audio API — laser shot (square wave freq sweep), explosion (noise burst with low-pass filter decay), hit spark (short high-pass noise), power-up collect (ascending C-E-G-C arpeggio), player hit (sawtooth descent + noise), menu select (sine blip). Volume control, mute toggle, autoplay policy handling. Fixed AudioManager reference in game.js mute button.
 - [3/4/2026, 10:53:05 AM] Task 14 done: Implement procedural audio
+- [DONE] Task 15: Created HUD and score display with canvas-rendered score (top-left), high score (top-right), wave number (top-center), lives as mini ship icons (bottom-left), active power-up timers with colored bars (bottom-right), combo multiplier display with pulse animation, and floating score pop-ups at enemy kill locations. Wired HUD.update into game loop, passed enemy coordinates to addScore for pop-up positioning, and added HUD.clearPopups on new game.
+- [3/4/2026, 10:55:03 AM] Task 15 done: Create HUD and score display

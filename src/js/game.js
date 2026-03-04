@@ -168,6 +168,11 @@ const Game = (function () {
     powerups.length = 0;
     activePowerUps = {};
 
+    // Clear HUD popups
+    if (typeof HUD !== 'undefined' && HUD.clearPopups) {
+      HUD.clearPopups();
+    }
+
     // Initialize subsystems that exist
     if (typeof Player !== 'undefined' && Player.init) {
       player = Player.init();
@@ -230,6 +235,9 @@ const Game = (function () {
     }
     if (typeof Collision !== 'undefined' && Collision.update) {
       Collision.update(Game);
+    }
+    if (typeof HUD !== 'undefined' && HUD.update) {
+      HUD.update(dt);
     }
     if (typeof Renderer !== 'undefined' && Renderer.update) {
       Renderer.update(dt);
@@ -439,11 +447,17 @@ const Game = (function () {
     get powerups() { return powerups; },
 
     // Setters for subsystems to modify game state
-    addScore(points) {
+    addScore(points, x, y) {
       comboCount++;
       comboTimer = SCORING.COMBO_WINDOW;
       const multiplier = 1 + (comboCount - 1) * SCORING.COMBO_MULTIPLIER;
-      score += Math.floor(points * multiplier);
+      const earned = Math.floor(points * multiplier);
+      score += earned;
+
+      // Score pop-up at kill location
+      if (typeof HUD !== 'undefined' && HUD.addScorePopup && x !== undefined) {
+        HUD.addScorePopup(x, y, earned, multiplier);
+      }
     },
 
     setScore(val) { score = val; },

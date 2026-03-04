@@ -276,7 +276,7 @@ const Enemies = (function () {
 
     // Add score
     if (game && game.addScore) {
-      game.addScore(enemy.scoreValue);
+      game.addScore(enemy.scoreValue, enemy.x, enemy.y);
     }
 
     // Spawn explosion particles
