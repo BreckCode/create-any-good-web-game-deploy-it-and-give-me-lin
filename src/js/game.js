@@ -113,6 +113,9 @@ const Game = (function () {
     switch (newState) {
       case STATE.MENU:
         showScreen(menuScreen);
+        if (typeof Menu !== 'undefined' && Menu.onMenuEnter) {
+          Menu.onMenuEnter();
+        }
         break;
 
       case STATE.PLAYING:
@@ -143,6 +146,10 @@ const Game = (function () {
           } else {
             newHighscoreMsg.classList.add('hidden');
           }
+        }
+        // Trigger menu canvas effects
+        if (typeof Menu !== 'undefined' && Menu.onGameOver) {
+          Menu.onGameOver(score, highScore);
         }
         showScreen(gameoverScreen);
         break;
@@ -259,6 +266,10 @@ const Game = (function () {
       if (typeof Starfield !== 'undefined' && Starfield.render) {
         Starfield.render(ctx);
       }
+      // Draw menu canvas effects (particles, glow, scan lines)
+      if (typeof Menu !== 'undefined' && Menu.render) {
+        Menu.render(ctx, currentState);
+      }
       return;
     }
 
@@ -314,6 +325,11 @@ const Game = (function () {
     if (typeof HUD !== 'undefined' && HUD.render) {
       HUD.render(ctx, Game);
     }
+
+    // Menu canvas effects for pause/game-over overlays
+    if (currentState !== STATE.PLAYING && typeof Menu !== 'undefined' && Menu.render) {
+      Menu.render(ctx, currentState);
+    }
   }
 
   // --- Main Loop ---
@@ -350,6 +366,13 @@ const Game = (function () {
     if (currentState === STATE.MENU || currentState === STATE.PAUSED) {
       if (typeof Starfield !== 'undefined' && Starfield.update) {
         Starfield.update(dt);
+      }
+    }
+
+    // Update menu canvas effects in non-playing states
+    if (currentState !== STATE.PLAYING) {
+      if (typeof Menu !== 'undefined' && Menu.update) {
+        Menu.update(dt, currentState);
       }
     }
 
@@ -535,6 +558,11 @@ const Game = (function () {
       // Initialize starfield for menu background
       if (typeof Starfield !== 'undefined' && Starfield.init) {
         Starfield.init();
+      }
+
+      // Initialize menu canvas effects
+      if (typeof Menu !== 'undefined' && Menu.init) {
+        Menu.init();
       }
 
       // Set up button click handlers
