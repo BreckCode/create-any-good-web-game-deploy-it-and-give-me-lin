@@ -1,0 +1,385 @@
+/* Reset */
+*, *::before, *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: #000;
+  font-family: 'Courier New', 'Consolas', monospace;
+  color: #fff;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+/* Game Container */
+#game-container {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  height: 100dvh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+/* Canvas */
+#game-canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+}
+
+/* Overlay Screens */
+.overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.85);
+  z-index: 10;
+  animation: overlayFadeIn 0.3s ease-out;
+}
+
+@keyframes overlayFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.overlay-content {
+  text-align: center;
+  max-width: 400px;
+  padding: 2rem;
+}
+
+.hidden {
+  display: none !important;
+}
+
+/* Title */
+.game-title {
+  font-size: 3.5rem;
+  font-weight: bold;
+  letter-spacing: 0.3em;
+  line-height: 1.1;
+  color: #0ff;
+  text-shadow:
+    0 0 10px #0ff,
+    0 0 30px #0ff,
+    0 0 60px #08f;
+  margin-bottom: 0.5rem;
+}
+
+.subtitle {
+  font-size: 0.85rem;
+  letter-spacing: 0.5em;
+  color: #f0f;
+  text-shadow: 0 0 10px #f0f;
+  margin-bottom: 2.5rem;
+}
+
+/* Buttons */
+.game-btn {
+  display: block;
+  width: 100%;
+  max-width: 260px;
+  margin: 0.75rem auto;
+  padding: 0.85rem 1.5rem;
+  font-family: inherit;
+  font-size: 1.1rem;
+  font-weight: bold;
+  letter-spacing: 0.15em;
+  color: #000;
+  background: #0ff;
+  border: 2px solid #0ff;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  text-transform: uppercase;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.game-btn:hover,
+.game-btn:focus {
+  background: #fff;
+  border-color: #fff;
+  box-shadow: 0 0 20px rgba(0, 255, 255, 0.5);
+  outline: none;
+}
+
+.game-btn:active {
+  transform: scale(0.96);
+  background: #aff;
+}
+
+.game-btn-secondary {
+  background: transparent;
+  color: #0ff;
+}
+
+.game-btn-secondary:hover,
+.game-btn-secondary:focus {
+  background: rgba(0, 255, 255, 0.15);
+  color: #fff;
+}
+
+/* Controls Info */
+.controls-info {
+  margin-top: 2rem;
+  font-size: 0.75rem;
+  color: #888;
+  letter-spacing: 0.1em;
+  line-height: 1.8;
+}
+
+.controls-header {
+  color: #0ff;
+  font-size: 0.8rem;
+  margin-bottom: 0.3rem;
+  letter-spacing: 0.3em;
+}
+
+.touch-hint {
+  color: #666;
+  font-style: italic;
+  margin-top: 0.3rem;
+}
+
+/* HUD — canvas-rendered, DOM div used only for show/hide state */
+#hud {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 5;
+}
+
+/* Hide DOM HUD content — all HUD info is drawn on canvas by hud.js */
+#hud-top,
+#hud-bottom {
+  display: none;
+}
+
+/* Pause Screen */
+.pause-title {
+  font-size: 2.5rem;
+  color: #0ff;
+  text-shadow: 0 0 20px #0ff;
+  letter-spacing: 0.3em;
+  margin-bottom: 2rem;
+}
+
+/* Game Over Screen */
+.gameover-title {
+  font-size: 2.5rem;
+  color: #f44;
+  text-shadow:
+    0 0 10px #f44,
+    0 0 30px #f00;
+  letter-spacing: 0.2em;
+  margin-bottom: 1.5rem;
+}
+
+.final-score {
+  margin-bottom: 1rem;
+}
+
+.final-score-label {
+  font-size: 0.7rem;
+  color: #888;
+  letter-spacing: 0.3em;
+}
+
+.final-score-number {
+  font-size: 2rem;
+  font-weight: bold;
+  color: #fff;
+  text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+}
+
+.new-highscore {
+  font-size: 1rem;
+  color: #ff0;
+  text-shadow: 0 0 15px #ff0;
+  letter-spacing: 0.2em;
+  margin-bottom: 1.5rem;
+  animation: pulse 0.6s ease-in-out infinite alternate;
+}
+
+@keyframes pulse {
+  from { opacity: 0.6; transform: scale(1); }
+  to { opacity: 1; transform: scale(1.05); }
+}
+
+/* Mute Button */
+.mute-btn {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  z-index: 20;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #fff;
+  font-size: 1.2rem;
+  width: 2.5rem;
+  height: 2.5rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s;
+  line-height: 1;
+  padding: 0;
+  border-radius: 4px;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.mute-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.mute-btn.muted {
+  opacity: 0.5;
+}
+
+/* Responsive — Tablets */
+@media (max-width: 768px) {
+  .game-title {
+    font-size: 2.8rem;
+  }
+
+  .overlay-content {
+    padding: 1.5rem;
+  }
+
+  .mute-btn {
+    width: 2.8rem;
+    height: 2.8rem;
+    font-size: 1.4rem;
+  }
+}
+
+/* Responsive — Phones */
+@media (max-width: 480px) {
+  .game-title {
+    font-size: 2.2rem;
+    letter-spacing: 0.2em;
+  }
+
+  .subtitle {
+    font-size: 0.6rem;
+    letter-spacing: 0.3em;
+    margin-bottom: 1.5rem;
+  }
+
+  .overlay-content {
+    padding: 1rem;
+  }
+
+  .game-btn {
+    font-size: 0.95rem;
+    padding: 0.75rem 1.2rem;
+    max-width: 220px;
+  }
+
+  .controls-info {
+    font-size: 0.6rem;
+    margin-top: 1.2rem;
+  }
+
+  .pause-title,
+  .gameover-title {
+    font-size: 1.8rem;
+    letter-spacing: 0.15em;
+  }
+
+  .final-score-number {
+    font-size: 1.5rem;
+  }
+
+  .final-score-label {
+    font-size: 0.6rem;
+  }
+
+  .mute-btn {
+    top: 0.5rem;
+    right: 0.5rem;
+    width: 2.5rem;
+    height: 2.5rem;
+    font-size: 1.3rem;
+  }
+}
+
+/* Responsive — Very small phones */
+@media (max-width: 360px) {
+  .game-title {
+    font-size: 1.8rem;
+  }
+
+  .subtitle {
+    font-size: 0.55rem;
+    margin-bottom: 1rem;
+  }
+
+  .game-btn {
+    font-size: 0.85rem;
+    padding: 0.65rem 1rem;
+    margin: 0.5rem auto;
+  }
+
+  .controls-info {
+    font-size: 0.55rem;
+    line-height: 1.6;
+  }
+}
+
+/* Landscape phones — reduce vertical spacing */
+@media (max-height: 420px) and (orientation: landscape) {
+  .game-title {
+    font-size: 1.6rem;
+    margin-bottom: 0.2rem;
+  }
+
+  .subtitle {
+    font-size: 0.5rem;
+    margin-bottom: 0.8rem;
+  }
+
+  .overlay-content {
+    padding: 0.5rem 1rem;
+  }
+
+  .game-btn {
+    margin: 0.4rem auto;
+    padding: 0.5rem 1rem;
+    font-size: 0.85rem;
+  }
+
+  .controls-info {
+    margin-top: 0.5rem;
+    font-size: 0.55rem;
+    line-height: 1.4;
+  }
+
+  .pause-title,
+  .gameover-title {
+    font-size: 1.5rem;
+    margin-bottom: 0.8rem;
+  }
+
+  .final-score {
+    margin-bottom: 0.5rem;
+  }
+
+  .final-score-number {
+    font-size: 1.2rem;
+  }
+}
