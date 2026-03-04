@@ -29,3 +29,5 @@ All individual entity systems exist (player, enemies, bullets, input, rendering,
 - [3/4/2026, 10:48:17 AM] Task 10 done: Build the wave spawner system
 - [DONE] Task 11: Implemented collision detection with circle-based checks for all entity pairs: player-bullets vs enemies (with damage, scoring, hit sparks, power-up drops), enemy-bullets vs player (with invincibility/shield checks), player vs enemies (body collision with mutual damage), and player vs power-ups (collection with effect activation, sparkles, and sound)
 - [3/4/2026, 10:49:35 AM] Task 11 done: Implement collision detection
+- [DONE] Task 12: Created particle system with particle pool (position, velocity, lifetime, color, size decay), explosion effects (configurable count, defaults to 20), engine trails, hit sparks, death bursts (40 particles), power-up sparkles, additive blending for glow, and drag-based velocity decay
+- [3/4/2026, 10:50:46 AM] Task 12 done: Create the particle system
