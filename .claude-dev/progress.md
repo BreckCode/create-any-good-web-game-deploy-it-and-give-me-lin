@@ -1,36 +1,26 @@
 # Progress
 
-## Status: Planning Complete
+## Status: In Progress — 9/19 tasks complete
 
 ## Completed
-- Project structure created
-- package.json initialized
-- Build script created
-- .gitignore configured
-- Architecture designed
-- Tasks broken down (20 tasks)
+- Task 1: HTML entry point and CSS layout (index.html, style.css)
+- Task 2: Utility functions and constants (utils.js)
+- Task 3: Input handling system (input.js)
+- Task 4: Main game loop and state machine (game.js)
+- Task 5: Renderer and camera system (renderer.js)
+- Task 6: Parallax starfield background (starfield.js)
+- Task 7: Player ship (player.js)
+- Task 8: Bullet/projectile system (bullets.js)
+- Task 9: Enemy types and AI behaviors (enemies.js)
+
+## In Progress
+- Tasks 10-19 remaining
+
+## Current State
+All individual entity systems exist (player, enemies, bullets, input, rendering, starfield) but are NOT wired together. Missing critical systems: collision detection, wave spawner, particles, power-ups, audio, HUD, menu logic. The game loads but no enemies spawn and nothing collides.
 
 ## Next Steps
-- Begin Task 2: Implement utility functions and constants
-- Work through tasks sequentially (2-20)
-- Deploy and provide live URL after task 20
-
-## Log
-- [2026-03-04] Completed: Task 1 - Created index.html with canvas element, menu/HUD/pause/game-over overlay screens, script loading order, and mute button. Created src/css/style.css with full-viewport canvas, retro neon-styled UI (cyan/magenta theme), responsive design with mobile breakpoints, HUD layout, overlay screens, button styles, and pulse animation for new high score.
-- [3/4/2026, 10:28:54 AM] Task 1 completed: Create HTML entry point and CSS layout
-- [2026-03-04] Completed: Task 2 - Implemented src/js/utils.js with math helpers (lerp, clamp, randRange, randInt, distance, distanceSq, angle, degToRad, radToDeg, normalize, smoothStep), Vec2 object with full vector operations (create, add, sub, scale, length, normalize, dot, rotate, fromAngle, lerp, distance), collision helpers (AABB, circle), color helpers (rgba, hexToRgb, fadeColor), localStorage helpers (save/load high score), and comprehensive game constants (GAME, COLORS, SPEEDS, PLAYER_DEFAULTS, ENEMY_DEFAULTS, POWERUP_DEFAULTS, SCORING, WAVE_CONFIG, PARTICLES, SCREEN_SHAKE).
-- [3/4/2026, 10:29:52 AM] Task 2 completed: Implement utility functions and constants
-- [2026-03-04] Completed: Task 3 - Built src/js/input.js with full input handling system: keyboard listeners (WASD/arrows mapped to directions, space to shoot, P/Escape to pause, Enter to confirm), mouse position tracking and click detection, touch controls with virtual joystick (left half = move, right half = shoot), canvas coordinate conversion, normalized diagonal movement, deadzone for touch, blur handler to clear state, and per-frame one-shot clearing.
-- [3/4/2026, 10:30:55 AM] Task 3 completed: Build input handling system
-- [2026-03-04] Completed: Task 4 - Created src/js/game.js with main game loop and state machine. Implements: requestAnimationFrame loop with delta time (capped at MAX_DT), four game states (MENU, PLAYING, PAUSED, GAME_OVER) with proper transitions, canvas resize handling maintaining aspect ratio, DOM-based UI screen toggling, button event wiring (start, resume, quit, restart, menu, mute), entity array management (playerBullets, enemyBullets, enemies, particles, powerups), score/combo system with multiplier, lives system with game-over trigger, power-up activation/timer tracking, subsystem coordination (update/render calls to all modules with existence checks), screen shake integration, high score persistence via localStorage, and DOMContentLoaded bootstrap.
-- [3/4/2026, 10:32:17 AM] Task 4 completed: Create the main game loop and state machine
-- [2026-03-04] Completed: Task 5 - Implemented src/js/renderer.js with full renderer and camera system. Includes: canvas context management (init, clear, beginFrame/endFrame), screen shake with intensity decay and configurable duration, screen flash overlay for explosions, coordinate transforms (screenToWorld/worldToScreen), blend mode switching (additive for particles, normal reset), drawing primitives (circle, rect, line, polygon with glow/shadow options), radial gradient glow effect for bullets/power-ups, text rendering with shadow support, and direct context access for advanced rendering.
-- [3/4/2026, 10:33:16 AM] Task 5 completed: Implement the renderer and camera system
-- [2026-03-04] Completed: Task 6 - Built src/js/starfield.js with parallax starfield background. Implements: 3 layers (far/mid/near) with 60/40/20 stars each, layer-specific speeds from SPEEDS constants (20/50/100 px/s), size ranges scaling with depth (0.5-1.2 / 1.0-2.0 / 1.5-3.0), brightness scaling (0.4/0.7/1.0), sine-wave twinkling with randomized phase and speed, 15% chance of blue-tinted stars, smooth downward scrolling with off-screen recycling, performance-optimized rendering (pixel rects for tiny stars, arcs for larger), subtle glow halos on bright near-layer stars.
-- [3/4/2026, 10:34:09 AM] Task 6 completed: Build the parallax starfield background
-- [2026-03-04] Completed: Task 7 - Created src/js/player.js with full Player module. Implements: position/velocity with smooth acceleration and friction-based deceleration, normalized directional input from Input system, bounds clamping to canvas edges, procedural polygon ship drawing (sleek fighter shape with gradient fill, cockpit detail, wing accents, cyan/magenta color scheme), animated engine trail with flickering flames and glow, ship tilt based on horizontal movement, invincibility frames with 0.1s blink toggle for INVINCIBLE_DURATION (2s), shooting with fire rate control (normal and rapid-fire power-up), spread-shot power-up support (3-bullet fan), shield visual overlay (pulsing radial gradient ring), circle collision radius, AABB bounding box accessor, and integration with Game state (loseLife, screen shake, particle spawning on hit, audio hooks).
-- [3/4/2026, 10:35:27 AM] Task 7 completed: Create the player ship
-- [2026-03-04] Completed: Task 8 - Implemented src/js/bullets.js with full bullet/projectile system. Includes: object pooling with configurable max counts (60 player, 80 enemy), bullet factory with per-type dimensions and collision radii, createPlayerBullet with normalized direction vectors, createEnemyBullet with speed multiplier support, createAimedBullet for targeted shots at player position, createEnemySpread for fan-pattern bullet spreads, per-frame update with velocity integration and off-screen despawn (40px margin), additive-blend rendering with glow effects (player: elongated capsule with gradient trail and bright core; enemy: diamond shape with radial glow and center dot), getBounds for AABB collision, destroy helper for deactivation, clearAll utility, and exposed radius constants for collision system.
-- [3/4/2026, 10:36:37 AM] Task 8 completed: Implement the bullet/projectile system
-- [2026-03-04] Completed: Task 9 - Created src/js/enemies.js with full enemy system. Implements: 4 enemy types (Basic, Zigzag, Tank, Boss) each with unique configs from constants. Enemy factory with type-specific dimensions, HP, speed, color, score value, and fire rates. Movement patterns: Basic (straight down), Zigzag (sine wave oscillation with configurable amplitude/frequency), Tank (slow descent with horizontal player tracking), Boss (settles to patrol Y then side-to-side patrol with vertical bob). Shooting AI: staggered fire timers, per-type fire chance, aimed bullets for Tank, mixed aimed/straight for Basic/Zigzag, Boss with 3 rotating attack patterns (spread, dual aimed, burst). Damage system with hit flash animation and HP tracking. Destruction triggers score, particle explosions, screen shake (scaled by enemy type), and audio. Procedural rendering: Basic (red angular fighter with engine glow), Zigzag (orange diamond wasp with tilt and pulsing core), Tank (purple hexagon with armor plating and turrets), Boss (large dreadnought with pulsing aura, command bridge, central eye, triple engines). Health bars for multi-HP enemies with color-coded fill.
-- [3/4/2026, 10:38:49 AM] Task 9 completed: Create enemy types and AI behaviors
+- Task 10: Wave spawner
+- Task 11: Collision detection
+- Task 12: Particle system
+- Then remaining systems, integration, polish, and deployment
