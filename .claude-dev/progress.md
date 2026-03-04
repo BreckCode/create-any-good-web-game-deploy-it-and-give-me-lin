@@ -31,3 +31,5 @@ All individual entity systems exist (player, enemies, bullets, input, rendering,
 - [3/4/2026, 10:49:35 AM] Task 11 done: Implement collision detection
 - [DONE] Task 12: Created particle system with particle pool (position, velocity, lifetime, color, size decay), explosion effects (configurable count, defaults to 20), engine trails, hit sparks, death bursts (40 particles), power-up sparkles, additive blending for glow, and drag-based velocity decay
 - [3/4/2026, 10:50:46 AM] Task 12 done: Create the particle system
+- [DONE] Task 13: Built power-up system with 4 types (shield, spread-shot, rapid-fire, extra life), weighted random drops from destroyed enemies (15% chance, life rarer at 10%), falling movement with bobbing animation, rotating diamond visuals with glow/sparkle effects, type labels, and integration with existing collision/game systems
+- [3/4/2026, 10:51:47 AM] Task 13 done: Build the power-up system
