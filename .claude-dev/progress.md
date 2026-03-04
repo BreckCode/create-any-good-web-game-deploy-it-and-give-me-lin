@@ -36,3 +36,4 @@
 ## Deployment
 - Live at: https://breckcode.github.io/create-any-good-web-game-deploy-it-and-give-me-lin/
 - Static site on GitHub Pages (gh-pages branch)
+- [3/4/2026, 11:27:30 AM] User instruction applied: Give me a link of it by publishing it anywhere
