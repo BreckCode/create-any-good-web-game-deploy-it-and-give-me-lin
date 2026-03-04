@@ -33,3 +33,5 @@ All individual entity systems exist (player, enemies, bullets, input, rendering,
 - [3/4/2026, 10:50:46 AM] Task 12 done: Create the particle system
 - [DONE] Task 13: Built power-up system with 4 types (shield, spread-shot, rapid-fire, extra life), weighted random drops from destroyed enemies (15% chance, life rarer at 10%), falling movement with bobbing animation, rotating diamond visuals with glow/sparkle effects, type labels, and integration with existing collision/game systems
 - [3/4/2026, 10:51:47 AM] Task 13 done: Build the power-up system
+- [DONE] Task 14: Implemented procedural audio with Web Audio API — laser shot (square wave freq sweep), explosion (noise burst with low-pass filter decay), hit spark (short high-pass noise), power-up collect (ascending C-E-G-C arpeggio), player hit (sawtooth descent + noise), menu select (sine blip). Volume control, mute toggle, autoplay policy handling. Fixed AudioManager reference in game.js mute button.
+- [3/4/2026, 10:53:05 AM] Task 14 done: Implement procedural audio

@@ -406,8 +406,8 @@ const Game = (function () {
 
     if (muteBtn) {
       muteBtn.addEventListener('click', function () {
-        if (typeof Audio !== 'undefined' && Audio.toggleMute) {
-          const muted = Audio.toggleMute();
+        if (typeof AudioManager !== 'undefined' && AudioManager.toggleMute) {
+          const muted = AudioManager.toggleMute();
           muteBtn.innerHTML = muted ? '&#x1f507;' : '&#x1f50a;';
         }
       });
