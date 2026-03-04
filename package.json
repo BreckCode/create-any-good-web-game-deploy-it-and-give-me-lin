@@ -6,7 +6,8 @@
   "scripts": {
     "build": "node build.js",
     "dev": "npx serve dist -p 3000",
-    "deploy": "node build.js && node deploy.js"
+    "deploy": "node build.js && node deploy.js",
+    "test": "node --test test/*.test.js"
   },
   "keywords": ["game", "space-shooter", "html5", "canvas", "arcade"],
   "license": "MIT",

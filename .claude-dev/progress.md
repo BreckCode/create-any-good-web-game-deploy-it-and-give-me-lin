@@ -45,3 +45,29 @@ All individual entity systems exist (player, enemies, bullets, input, rendering,
 - [3/4/2026, 11:06:29 AM] Task 18 done: Polish and visual effects
 - [DONE] Task 19: Deployed to GitHub Pages — built dist folder via build.js, created gh-pages branch with built assets, made repo public, enabled GitHub Pages, verified site is live at https://breckcode.github.io/create-any-good-web-game-deploy-it-and-give-me-lin/. Updated package.json deploy script.
 - [3/4/2026, 11:11:39 AM] Task 19 done: Deploy to the web
+
+## Test Suite Results (3/4/2026)
+
+**113 tests passing across 22 test suites — 0 failures**
+
+### Test Framework
+- Node.js built-in test runner (`node --test`)
+- Custom vm-based module loader to run IIFE browser modules in Node.js
+- No external test dependencies required
+
+### Test Coverage
+
+| Test File | Suites | Tests | What's Tested |
+|-----------|--------|-------|---------------|
+| utils.test.js | 6 | 30 | Math helpers (lerp, clamp, randRange, distance), Vec2 operations, collision helpers (circle, AABB), color helpers, game constants, localStorage |
+| enemies.test.js | 3 | 16 | Enemy factory (all 4 types), damage/destruction system, score tracking, movement updates, despawning |
+| bullets.test.js | 3 | 14 | Player/enemy bullet creation, pool limits, direction normalization, aimed/spread bullets, velocity, lifecycle |
+| powerups.test.js | 3 | 13 | Power-up factory (4 types), weighted random drops, falling movement, cleanup |
+| particles.test.js | 2 | 12 | Explosion/death burst/trail/spark spawning, particle counts, lifetime expiry, ring particles |
+| collision.test.js | 3 | 11 | Player bullets vs enemies, enemy bullets vs player, invincibility/shield protection, power-up collection, life pickup |
+| spawner.test.js | 2 | 11 | Wave initialization, spawn timing, boss wave detection, wave advancement, difficulty scaling, announcements |
+
+### Key Integration Tests
+- **Collision system**: Full pipeline — bullet hits enemy → enemy takes damage → score added → bullet deactivated
+- **Spawner + Enemies**: Wave start → enemy spawning → wave completion → wave advancement
+- **Power-up collection**: Player contacts power-up → correct effect activated (shield/spread/rapid/life)
