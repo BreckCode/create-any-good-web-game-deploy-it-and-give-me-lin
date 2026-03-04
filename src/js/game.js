@@ -295,6 +295,11 @@ const Game = (function () {
       Particles.render(ctx, particles);
     }
 
+    // Wave announcements
+    if (typeof Spawner !== 'undefined' && Spawner.render) {
+      Spawner.render(ctx);
+    }
+
     ctx.restore();
 
     // HUD drawn without shake

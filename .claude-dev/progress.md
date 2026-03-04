@@ -13,8 +13,10 @@
 - Task 8: Bullet/projectile system (bullets.js)
 - Task 9: Enemy types and AI behaviors (enemies.js)
 
+- [DONE] Task 10: Built wave spawner system with wave composition based on wave number, difficulty scaling (speed/fire rate), boss waves every 5 levels, spawn queue with shuffled order, between-wave pauses, and animated wave announcements rendered on canvas
+
 ## In Progress
-- Tasks 10-19 remaining
+- Tasks 11-19 remaining
 
 ## Current State
 All individual entity systems exist (player, enemies, bullets, input, rendering, starfield) but are NOT wired together. Missing critical systems: collision detection, wave spawner, particles, power-ups, audio, HUD, menu logic. The game loads but no enemies spawn and nothing collides.
@@ -24,3 +26,4 @@ All individual entity systems exist (player, enemies, bullets, input, rendering,
 - Task 11: Collision detection
 - Task 12: Particle system
 - Then remaining systems, integration, polish, and deployment
+- [3/4/2026, 10:48:17 AM] Task 10 done: Build the wave spawner system
