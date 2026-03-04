@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>Cosmic Defender</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div id="game-container">
+    <canvas id="game-canvas"></canvas>
+
+    <!-- Menu Screen -->
+    <div id="menu-screen" class="overlay">
+      <div class="overlay-content">
+        <h1 class="game-title">COSMIC<br>DEFENDER</h1>
+        <p class="subtitle">SPACE SHOOTER ARCADE</p>
+        <button id="start-btn" class="game-btn">START GAME</button>
+        <div class="controls-info">
+          <p class="controls-header">CONTROLS</p>
+          <p>WASD / Arrow Keys — Move</p>
+          <p>Space — Shoot</p>
+          <p>P — Pause</p>
+          <p class="touch-hint">Tap &amp; drag on mobile</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- HUD -->
+    <div id="hud" class="hidden">
+      <div id="hud-top">
+        <div id="hud-score">
+          <span class="hud-label">SCORE</span>
+          <span id="score-value">0</span>
+        </div>
+        <div id="hud-wave">
+          <span class="hud-label">WAVE</span>
+          <span id="wave-value">1</span>
+        </div>
+        <div id="hud-highscore">
+          <span class="hud-label">HI-SCORE</span>
+          <span id="highscore-value">0</span>
+        </div>
+      </div>
+      <div id="hud-bottom">
+        <div id="hud-lives"></div>
+        <div id="hud-powerups"></div>
+      </div>
+    </div>
+
+    <!-- Pause Overlay -->
+    <div id="pause-screen" class="overlay hidden">
+      <div class="overlay-content">
+        <h2 class="pause-title">PAUSED</h2>
+        <button id="resume-btn" class="game-btn">RESUME</button>
+        <button id="quit-btn" class="game-btn game-btn-secondary">QUIT TO MENU</button>
+      </div>
+    </div>
+
+    <!-- Game Over Screen -->
+    <div id="gameover-screen" class="overlay hidden">
+      <div class="overlay-content">
+        <h2 class="gameover-title">GAME OVER</h2>
+        <div class="final-score">
+          <p class="final-score-label">FINAL SCORE</p>
+          <p id="final-score-value" class="final-score-number">0</p>
+        </div>
+        <div class="final-score">
+          <p class="final-score-label">HIGH SCORE</p>
+          <p id="final-highscore-value" class="final-score-number">0</p>
+        </div>
+        <p id="new-highscore-msg" class="new-highscore hidden">NEW HIGH SCORE!</p>
+        <button id="restart-btn" class="game-btn">PLAY AGAIN</button>
+        <button id="menu-btn" class="game-btn game-btn-secondary">MAIN MENU</button>
+      </div>
+    </div>
+
+    <!-- Mute Toggle -->
+    <button id="mute-btn" class="mute-btn" title="Toggle Sound">&#x1f50a;</button>
+  </div>
+
+  <script src="js/utils.js"></script>
+  <script src="js/input.js"></script>
+  <script src="js/audio.js"></script>
+  <script src="js/renderer.js"></script>
+  <script src="js/starfield.js"></script>
+  <script src="js/particles.js"></script>
+  <script src="js/bullets.js"></script>
+  <script src="js/player.js"></script>
+  <script src="js/enemies.js"></script>
+  <script src="js/powerups.js"></script>
+  <script src="js/spawner.js"></script>
+  <script src="js/collision.js"></script>
+  <script src="js/hud.js"></script>
+  <script src="js/menu.js"></script>
+  <script src="js/game.js"></script>
+</body>
+</html>
