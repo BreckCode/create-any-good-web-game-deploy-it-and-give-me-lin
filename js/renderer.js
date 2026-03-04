@@ -46,7 +46,7 @@ const Renderer = (function () {
     // Update screen shake
     if (shakeTimer > 0) {
       shakeTimer -= dt;
-      const progress = clamp(shakeTimer / shakeDuration, 0, 1);
+      const progress = shakeDuration > 0 ? clamp(shakeTimer / shakeDuration, 0, 1) : 0;
       const currentIntensity = shakeIntensity * progress * SCREEN_SHAKE.DECAY;
       shakeOffsetX = randRange(-currentIntensity, currentIntensity);
       shakeOffsetY = randRange(-currentIntensity, currentIntensity);
@@ -76,7 +76,8 @@ const Renderer = (function () {
 
   // Trigger screen shake
   function shake(intensity, duration) {
-    if (intensity > shakeIntensity * (shakeTimer / shakeDuration || 0)) {
+    if (duration <= 0) return;
+    if (intensity > shakeIntensity * (shakeDuration > 0 ? shakeTimer / shakeDuration : 0)) {
       shakeIntensity = intensity;
       shakeDuration = duration;
       shakeTimer = duration;

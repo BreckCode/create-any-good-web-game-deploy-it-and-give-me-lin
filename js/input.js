@@ -142,11 +142,9 @@ const Input = (function () {
       if (t.identifier === touch.moveId) {
         touch.active = false;
         touch.moveId = null;
-        // Clear directional keys from touch
-        keys['up'] = false;
-        keys['down'] = false;
-        keys['left'] = false;
-        keys['right'] = false;
+        // Touch joystick direction is computed live in getDirection(),
+        // so no need to clear keyboard key state here (doing so would
+        // cancel keyboard-held directions on a hybrid device).
       }
       if (t.identifier === touch.shootId) {
         touch.shootId = null;

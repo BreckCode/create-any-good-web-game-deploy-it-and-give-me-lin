@@ -172,6 +172,7 @@ function normalize(x, y) {
 
 // Pick a random element from an array
 function randPick(arr) {
+  if (!arr || arr.length === 0) return null;
   return arr[Math.floor(Math.random() * arr.length)];
 }
 
