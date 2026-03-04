@@ -6,7 +6,7 @@
   "scripts": {
     "build": "node build.js",
     "dev": "npx serve dist -p 3000",
-    "deploy": "node build.js && npx surge dist cosmic-defender-game.surge.sh"
+    "deploy": "node build.js && node deploy.js"
   },
   "keywords": ["game", "space-shooter", "html5", "canvas", "arcade"],
   "license": "MIT",
