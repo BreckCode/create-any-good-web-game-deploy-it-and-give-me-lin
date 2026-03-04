@@ -7,7 +7,7 @@
 - [x] 5. Implement the renderer and camera system | Canvas context management, screen shake effect, coordinate transforms, clearing, blend modes for particles | files: src/js/renderer.js
 - [x] 6. Build the parallax starfield background | Multiple layers of stars with different speeds and sizes, twinkling effect, smooth scrolling | files: src/js/starfield.js
 - [x] 7. Create the player ship | Player class with position, velocity, acceleration, bounds clamping, ship drawing (procedural polygon), invincibility frames on hit, lives system | files: src/js/player.js
-- [ ] 8. Implement the bullet/projectile system | Bullet class for player and enemy projectiles, bullet pool, different bullet types (single, spread, rapid), movement and lifecycle | files: src/js/bullets.js
+- [x] 8. Implement the bullet/projectile system | Bullet class for player and enemy projectiles, bullet pool, different bullet types (single, spread, rapid), movement and lifecycle | files: src/js/bullets.js
 - [ ] 9. Create enemy types and AI behaviors | Base Enemy class, 3+ enemy types: basic (straight line), zigzag (sine wave), tank (slow, high HP). Each with unique movement patterns and visual designs | files: src/js/enemies.js
 - [ ] 10. Build the wave spawner system | Wave progression, enemy composition per wave, spawn timing, difficulty scaling (speed, count, fire rate), boss waves every 5 levels | files: src/js/spawner.js
 - [ ] 11. Implement collision detection | AABB and circle-based collision checks, player-bullets vs enemies, enemy-bullets vs player, player vs power-ups, player vs enemies | files: src/js/collision.js
