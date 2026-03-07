@@ -34,9 +34,11 @@
 - Covers: utils, enemies, bullets, powerups, particles, collision, spawner
 
 ## Deployment
-- Live at: https://breckcode.github.io/create-any-good-web-game-deploy-it-and-give-me-lin/
-- Static site on GitHub Pages (gh-pages branch)
+- Live at (Netlify): https://cosmic-defender-arcade.netlify.app
+- Also on GitHub Pages: https://breckcode.github.io/create-any-good-web-game-deploy-it-and-give-me-lin/
 - [3/4/2026, 11:27:30 AM] User instruction applied: Give me a link of it by publishing it anywhere
 - [3/4/2026, 12:00:45 PM] User change: Create a 3D web game and deploy it and give me link should be very good
 - [3/4/2026, 3:49:08 PM] User change: Deploy it and give me url
 - [3/7/2026, 3:51:49 PM] User change: Publish it and give me URL
+- [3/7/2026] Deployed to Netlify
+- [3/7/2026, 3:54:56 PM] User change: Netlify url
